@@ -1,7 +1,7 @@
 /**
-* Sample React Redux
-* @Author: Kain·Shi <a904616537@outlook.com>
-* @DateTime:    2018-06-14 15:44:23
+# Sample Wechat MP
+* @Author: Sumi <xumin.1991@163.com>
+* @DateTime:    2018-06-14 16:15:52
 * @Description
 * @Flow 
 */

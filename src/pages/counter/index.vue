@@ -24,7 +24,7 @@ export default {
     methods: {
         increment () {
             // @params ([string], [object]) 
-            store.commit('counter/increment', {})
+            store.commit('counter/increment', {count :1})
         },
         decrement () {
             store.commit('counter/decrement', {})
