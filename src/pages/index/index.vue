@@ -10,10 +10,11 @@
 	<div class="home">
 		<div class="swiper">
 			<swiper :autoplay="autoplay" :interval="interval" :duration="duration" :indicatorDots="indicatorDots" :indicatorColor="indicatorColor" 
-			>
-				<block v-for="(item, index) in imgUrls" :key="index">
+			:indicator-active-color="indicatorActiveColor">
+				<block v-for="img in imgUrls" :key="index">
 					<swiper-item>
-				      	<image :src="item" class="slide-image"></image>
+						{{index}}
+				      	<image :src="imgUrls.img" class="slide-image" alt="imgs"></image>
 				    </swiper-item>
 				</block>
 			</swiper>	
@@ -62,6 +63,7 @@
 </template>
 
 <script>
+
 	export default{
 		data() {
 			return {
@@ -69,15 +71,14 @@
 				price: 18,
 				free: false,
 				indicatorDots: true,
-				indicatorColor: 'rgba(255,255,255,.3)',
+				indicatorColor: 'rgba(255,255,255,.4)',
 				indicatorActiveColor: '#fff',
-				autoplay: false,
+				autoplay: true,
 				interval: 5000,
-				duration: 1000,
+				duration: 500,
 				imgUrls: [
-			      	{item : 'http://img02.tooopen.com/images/20150928/tooopen_sy_143912755726.jpg'},
-			      	{item : 'http://img06.tooopen.com/images/20160818/tooopen_sy_175866434296.jpg'},
-			      	{item : 'http://img06.tooopen.com/images/20160818/tooopen_sy_175833047715.jpg'}
+			      	{img : '/static/images/image-1.png'},
+			      	{img : '/static/images/image-2.png'}
 			    ]
 			}
 		}
@@ -92,11 +93,20 @@
 	  overflow-x: hidden;
 	  overflow-y: auto;
 	}
-	.swiper{
+	swiper{
 		height: 360rpx;
+	}
+	.swiper{
 		margin: 20rpx;
-		background-color: #f4f4f4;
+		/*background-color: #f4f4f4;*/
+		background-color: #d6d3d4;
 		border-radius: 20rpx;	
+	}
+	.swiper .slide-image{
+		width: 100%;
+		height: 360rpx;
+		background-size: cover;
+		overflow: hidden;
 	}
 	.list-box{
 		padding: 0 10rpx;
@@ -126,7 +136,7 @@
 		border-radius: 10rpx;
 	}
 	.item-content{
-		padding: 10rpx 20rpx;
+		padding: 10rpx 14rpx;
 		color: #BF6A0B;
 	}
 	.list-item .item-bottom{
