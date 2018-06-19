@@ -1,9 +1,17 @@
+<!--
+* Sample Vuejs 
+* @Author: Kain·Shi <a904616537@outlook.com>
+* @DateTime:    2018-06-14 16:11:17
+* @Description
+* @Flow 
+-->
+
 <template>
     <div class="counter-warp">
         <p>Vuex counter：{{ count }}</p>
         <p>
-          <button @click="increment">+</button>
-          <button @click="decrement">-</button>
+            <button @click="increment">+</button>
+            <button @click="decrement">-</button>
         </p>
 
         <a href="/pages/index/main" class="home">去往首页</a>
