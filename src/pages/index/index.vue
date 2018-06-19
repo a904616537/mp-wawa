@@ -1,105 +1,165 @@
+<!--
+# Sample Vuejs
+* @Author: Sumi <xumin.1991@163.com>
+* @DateTime:    2018-06-14 16:26:51
+* @Description
+* @Flow 
+-->
+
 <template>
-    <div class="container" @click="clickHandle('test click', $event)">
-
-        <div class="userinfo" @click="bindViewTap">
-            <img class="userinfo-avatar" v-if="userInfo.avatarUrl" :src="userInfo.avatarUrl" background-size="cover" />
-            <div class="userinfo-nickname">
-                <card :text="userInfo.nickName"></card>
-            </div>
-        </div>
-
-        <div class="usermotto">
-            <div class="user-motto">
-                <card :text="motto"></card>
-            </div>
-        </div>
-
-        <form class="form-container">
-            <input type="text" class="form-control" v-model="motto" placeholder="v-model" />
-            <input type="text" class="form-control" v-model.lazy="motto" placeholder="v-model.lazy" />
-        </form>
-        <a href="/pages/counter/main" class="counter">去往Vuex示例页面</a>
-    </div>
+	<div class="home">
+		<div class="swiper">
+			<swiper :autoplay="autoplay" :interval="interval" :duration="duration" :indicatorDots="indicatorDots" :indicatorColor="indicatorColor" 
+			>
+				<block v-for="(item, index) in imgUrls" :key="index">
+					<swiper-item>
+				      	<image :src="item" class="slide-image"></image>
+				    </swiper-item>
+				</block>
+			</swiper>	
+		</div>
+		<div class="list-box">
+			<div class="list-item">
+				<div class="inner">
+					<div class="img-style"></div>
+					<div class="item-content">
+						<h3>{{name}}</h3>
+						<div class="item-bottom">
+							<div class="price bottom-style">{{price}}币/次</div>
+							<div class="status bottom-style" v-if="free? true : false"><div class="radius"></div>空闲中</div>
+							<div class="status-nofree" v-if="free? false : true"><div class="radius-nofree"></div>召唤中</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="list-item">
+				<div class="inner">
+					<div class="img-style"></div>
+					<div class="item-content">
+						<h3>{{name}}</h3>
+						<div class="item-bottom">
+							<div class="price">{{price}}币/次</div>
+							<div class="status bottom-style" v-if="free? true : false"><div class="radius"></div>空闲中</div>
+							<div class="status-nofree" v-if="free? false : true"><div class="radius-nofree"></div>召唤中</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="list-item">
+				<div class="inner">
+					<div class="img-style"></div>
+					<div class="item-content">
+						<h3>{{name}}</h3>
+						<div class="item-bottom">
+							<div class="price">{{price}}币/次</div>
+							<div class="status"><div class="radius"></div>空闲中</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </template>
 
 <script>
-import card from '@/components/card'
-
-export default {
-  data () {
-    return {
-      motto: 'Hello World',
-      userInfo: {}
-    }
-  },
-
-  components: {
-    card
-  },
-
-  methods: {
-    bindViewTap () {
-      const url = '../logs/main'
-      wx.navigateTo({ url })
-    },
-    getUserInfo () {
-      // 调用登录接口
-      wx.login({
-        success: () => {
-          wx.getUserInfo({
-            success: (res) => {
-              this.userInfo = res.userInfo
-            }
-          })
-        }
-      })
-    },
-    clickHandle (msg, ev) {
-      console.log('clickHandle:', msg, ev)
-    }
-  },
-
-  created () {
-    // 调用应用实例的方法获取全局数据
-    this.getUserInfo()
-  }
-}
+	export default{
+		data() {
+			return {
+				name: '商品名称',
+				price: 18,
+				free: false,
+				indicatorDots: true,
+				indicatorColor: 'rgba(255,255,255,.3)',
+				indicatorActiveColor: '#fff',
+				autoplay: false,
+				interval: 5000,
+				duration: 1000,
+				imgUrls: [
+			      	{item : 'http://img02.tooopen.com/images/20150928/tooopen_sy_143912755726.jpg'},
+			      	{item : 'http://img06.tooopen.com/images/20160818/tooopen_sy_175866434296.jpg'},
+			      	{item : 'http://img06.tooopen.com/images/20160818/tooopen_sy_175833047715.jpg'}
+			    ]
+			}
+		}
+	}
 </script>
 
-<style scoped>
-.userinfo {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.userinfo-avatar {
-  width: 128rpx;
-  height: 128rpx;
-  margin: 20rpx;
-  border-radius: 50%;
-}
-
-.userinfo-nickname {
-  color: #aaa;
-}
-
-.usermotto {
-  margin-top: 150px;
-}
-
-.form-control {
-  display: block;
-  padding: 0 12px;
-  margin-bottom: 5px;
-  border: 1px solid #ccc;
-}
-
-.counter {
-  display: inline-block;
-  margin: 10px auto;
-  padding: 5px 10px;
-  color: blue;
-  border: 1px solid blue;
-}
+<style>
+	Page {
+	  background: #f3f0e3;
+	  width: 100%;
+	  height: 100%;
+	  overflow-x: hidden;
+	  overflow-y: auto;
+	}
+	.swiper{
+		height: 360rpx;
+		margin: 20rpx;
+		background-color: #f4f4f4;
+		border-radius: 20rpx;	
+	}
+	.list-box{
+		padding: 0 10rpx;
+	}
+	.list-item{
+		width: 50%;
+		float: left;
+		overflow: hidden;
+		margin-bottom: 20rpx;
+		font-size: 28rpx;
+	}
+	.list-box:after,.item-bottom:after{
+		content: '.';
+		clear: both;
+		display: block;
+		height: 0;
+		overflow: hidden;
+	}
+	.list-item .inner{
+		margin: 0 10rpx;
+		border-radius: 10rpx;
+		background-color: #fff;
+	}
+	.img-style{
+		background-color: #d6d3d4;
+		height: 260rpx;
+		border-radius: 10rpx;
+	}
+	.item-content{
+		padding: 10rpx 20rpx;
+		color: #BF6A0B;
+	}
+	.list-item .item-bottom{
+		font-size: 24rpx;
+		margin-bottom: 20rpx;
+		font-weight: 300;
+	}
+	.item-bottom .price{
+		float: left;
+	}
+	.item-bottom .status{
+		float: right;
+		color: #B7E549;
+	}
+	.item-bottom .radius{
+		width: 20rpx;
+		height: 20rpx;
+		border-radius: 50%;
+		background-color: #B7E549;
+		display: inline-block;
+		margin-right: 5rpx;
+	}
+	.item-bottom .status-nofree{
+		float: right;
+		color: #D5443D;
+	}
+	.item-bottom .radius-nofree{
+		width: 20rpx;
+		height: 20rpx;
+		border-radius: 50%;
+		background-color: #D5443D;
+		display: inline-block;
+		margin-right: 5rpx;
+	}
 </style>
+

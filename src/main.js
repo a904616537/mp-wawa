@@ -1,3 +1,12 @@
+/**
+# Sample Wechat MP
+* @Author: Sumi <xumin.1991@163.com>
+* @DateTime:    2018-06-15 15:51:29
+* @Description
+* @Flow 
+*/
+
+
 import Vue from 'vue'
 import App from './App'
 
@@ -14,9 +23,9 @@ export default {
     pages: ['pages/logs/main', 'pages/index/main', '^pages/rotary/main'],
     window: {
       backgroundTextStyle: 'light',
-      navigationBarBackgroundColor: '#fff',
-      navigationBarTitleText: 'WeChat',
-      navigationBarTextStyle: 'black'
+      navigationBarBackgroundColor: '#f2d56e',
+      navigationBarTitleText: '抓娃娃王国',
+      navigationBarTextStyle: 'black',
     }
   }
 }
