@@ -13,8 +13,7 @@
 			:indicator-active-color="indicatorActiveColor">
 				<block v-for="img in imgUrls" :key="index">
 					<swiper-item>
-						{{index}}
-				      	<image :src="imgUrls.img" class="slide-image" alt="imgs"></image>
+				      	<image :src="imgUrls" class="slide-image" alt="imgs"></image>
 				    </swiper-item>
 				</block>
 			</swiper>	
@@ -76,11 +75,42 @@
 				autoplay: true,
 				interval: 5000,
 				duration: 500,
-				imgUrls: [
-			      	{img : '/static/images/image-1.png'},
-			      	{img : '/static/images/image-2.png'}
-			    ]
+				imgUrls: [],
+				userInfo: {}
 			}
+		},
+		methods: {
+			getUserInfo () {
+		      	// 调用登录接口
+		      	wx.login({
+		        	success: (res) => {
+		        		if(res.code) {
+		        			wx.request({
+		        				url : '',
+		        				data: {
+		        					code: res.code
+		        				},
+		        				method: 'POST',
+		        				header: {'content-type': 'application/json'},
+		        				success: function(data){
+		        					console.log(data)
+		        				}
+		        			})
+		        			wx.getUserInfo({
+			            		success: (res) => {
+			              			this.userInfo = res.userInfo
+			            		},
+			          		})
+		        		}else {
+		        			console.log('获取用户登录态失败！' + res.errMsg)
+		        		}
+		        	}
+		      	})
+		    },
+		},
+		created () {
+		    // 调用应用实例的方法获取全局数据
+		    this.getUserInfo()
 		}
 	}
 </script>
@@ -98,8 +128,7 @@
 	}
 	.swiper{
 		margin: 20rpx;
-		/*background-color: #f4f4f4;*/
-		background-color: #d6d3d4;
+		background-color: #f4f4f4;
 		border-radius: 20rpx;	
 	}
 	.swiper .slide-image{
