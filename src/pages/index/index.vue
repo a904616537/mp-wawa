@@ -16,10 +16,12 @@
 			:duration="duration"
 			:indicatorDots="indicatorDots"
 			:indicatorColor="indicatorColor"
+			:indicator-active-color="indicatorActiveColor"
 			>
 				<block v-for="(item, index) in imgUrls" :key="index">
+
 					<swiper-item>
-				      	<image :src="item" class="slide-image"></image>
+				      	<image :src="imgUrls" class="slide-image" alt="imgs"></image>
 				    </swiper-item>
 				</block>
 			</swiper>
@@ -68,6 +70,7 @@
 </template>
 
 <script>
+
 	export default{
 		data() {
 			return {
@@ -75,9 +78,9 @@
 				price: 18,
 				free: false,
 				indicatorDots: true,
-				indicatorColor: 'rgba(255,255,255,.3)',
+				indicatorColor: 'rgba(255,255,255,.4)',
 				indicatorActiveColor: '#fff',
-				autoplay: false,
+				autoplay: true,
 				interval: 5000,
 				duration: 1000,
 				imgUrls: [
@@ -86,6 +89,39 @@
 					'http://img06.tooopen.com/images/20160818/tooopen_sy_175833047715.jpg'
 			    ]
 			}
+		},
+		methods: {
+			getUserInfo () {
+		      	// 调用登录接口
+		      	wx.login({
+		        	success: (res) => {
+		        		if(res.code) {
+		        			wx.request({
+		        				url : '',
+		        				data: {
+		        					code: res.code
+		        				},
+		        				method: 'POST',
+		        				header: {'content-type': 'application/json'},
+		        				success: function(data){
+		        					console.log(data)
+		        				}
+		        			})
+		        			wx.getUserInfo({
+			            		success: (res) => {
+			              			this.userInfo = res.userInfo
+			            		},
+			          		})
+		        		}else {
+		        			console.log('获取用户登录态失败！' + res.errMsg)
+		        		}
+		        	}
+		      	})
+		    },
+		},
+		created () {
+		    // 调用应用实例的方法获取全局数据
+		    this.getUserInfo()
 		}
 	}
 </script>
@@ -98,15 +134,19 @@
 	  overflow-x: hidden;
 	  overflow-y: auto;
 	}
-	.swiper{
-		overflow: hidden;
-		margin           : 20rpx;
-		border-radius    : 20rpx;
-		background-color : #f4f4f4;
+	swiper{
+		height: 360rpx;
 	}
-	.slide-image{
-		width  : 100%;
-		height : 360rpx;
+	.swiper{
+		margin: 20rpx;
+		background-color: #f4f4f4;
+		border-radius: 20rpx;	
+	}
+	.swiper .slide-image{
+		width: 100%;
+		height: 360rpx;
+		background-size: cover;
+		overflow: hidden;
 	}
 	.list-box{
 		padding: 0 10rpx;
@@ -136,7 +176,7 @@
 		border-radius: 10rpx;
 	}
 	.item-content{
-		padding: 10rpx 20rpx;
+		padding: 10rpx 14rpx;
 		color: #BF6A0B;
 	}
 	.list-item .item-bottom{
