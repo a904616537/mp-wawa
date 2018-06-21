@@ -1,10 +1,13 @@
 /**
-* Sample React Redux
-* @Author: Kain·Shi <a904616537@outlook.com>
-* @DateTime:    2018-06-14 15:41:25
+# Sample Wechat MP
+* @Author: Sumi <xumin.1991@163.com>
+* @DateTime:    2018-06-14 16:15:52
 * @Description
 * @Flow 
 */
 
 export const  DEVRENENT = 'counter/decrement'
 export const  INCREMENT = 'counter/increment'
+
+export const  LOGIN         = 'user/login'
+export const  SETSESSIONKEY = 'user/session_key'

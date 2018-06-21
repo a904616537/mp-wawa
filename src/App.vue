@@ -1,12 +1,34 @@
 <script>
-export default {
-    created () {
-        // 调用API从本地缓存中获取数据
-        const logs = wx.getStorageSync('logs') || []
-        logs.unshift(Date.now())
-        wx.setStorageSync('logs', logs)
+import Vue     from 'vue';
 
-        console.log('app created and cache logs by setStorageSync')
+export default {
+    methods: {
+    },
+    created() {
+        wx.connectSocket({
+            url    : Vue.setting.socketUrl,
+            data   : {},
+            header : { 'content-type': 'application/json' },
+            method : "GET",
+            success : (socket) => {
+                console.log('socket 链接成功', socket)
+            },
+            fail : (err) => {
+                console.log('socket 链接失败', err)
+            }
+        })
+        
+        wx.onSocketOpen(function(res){
+            console.log('WebSocket连接已打开！', res)
+        })
+        wx.onSocketError(function(res){
+            console.log('WebSocket连接打开失败，请检查！')
+        })
+
+        wx.onSocketMessage(function(res) {
+            console.log('收到服务器内容：' + res.data)
+        })
+        
     }
 }
 </script>

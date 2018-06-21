@@ -6,6 +6,6 @@ app.$mount()
 
 export default {
 	config: {
-		navigationBarTitleText: '大转盘'
+		navigationBarTitleText: '召唤详情'
 	}
 }

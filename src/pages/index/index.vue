@@ -9,14 +9,20 @@
 <template>
 	<div class="home">
 		<div class="swiper">
-			<swiper :autoplay="autoplay" :interval="interval" :duration="duration" :indicatorDots="indicatorDots" :indicatorColor="indicatorColor" 
+			<swiper
+			style ="height : 360rpx;"
+			:autoplay="autoplay"
+			:interval="interval"
+			:duration="duration"
+			:indicatorDots="indicatorDots"
+			:indicatorColor="indicatorColor"
 			>
 				<block v-for="(item, index) in imgUrls" :key="index">
 					<swiper-item>
 				      	<image :src="item" class="slide-image"></image>
 				    </swiper-item>
 				</block>
-			</swiper>	
+			</swiper>
 		</div>
 		<div class="list-box">
 			<div class="list-item">
@@ -75,9 +81,9 @@
 				interval: 5000,
 				duration: 1000,
 				imgUrls: [
-			      	{item : 'http://img02.tooopen.com/images/20150928/tooopen_sy_143912755726.jpg'},
-			      	{item : 'http://img06.tooopen.com/images/20160818/tooopen_sy_175866434296.jpg'},
-			      	{item : 'http://img06.tooopen.com/images/20160818/tooopen_sy_175833047715.jpg'}
+					'http://img02.tooopen.com/images/20150928/tooopen_sy_143912755726.jpg',
+					'http://img06.tooopen.com/images/20160818/tooopen_sy_175866434296.jpg',
+					'http://img06.tooopen.com/images/20160818/tooopen_sy_175833047715.jpg'
 			    ]
 			}
 		}
@@ -93,32 +99,36 @@
 	  overflow-y: auto;
 	}
 	.swiper{
-		height: 360rpx;
-		margin: 20rpx;
-		background-color: #f4f4f4;
-		border-radius: 20rpx;	
+		overflow: hidden;
+		margin           : 20rpx;
+		border-radius    : 20rpx;
+		background-color : #f4f4f4;
+	}
+	.slide-image{
+		width  : 100%;
+		height : 360rpx;
 	}
 	.list-box{
 		padding: 0 10rpx;
 	}
 	.list-item{
-		width: 50%;
-		float: left;
-		overflow: hidden;
-		margin-bottom: 20rpx;
-		font-size: 28rpx;
+		width         : 50%;
+		float         : left;
+		overflow      : hidden;
+		font-size     : 28rpx;
+		margin-bottom : 20rpx;
 	}
 	.list-box:after,.item-bottom:after{
-		content: '.';
-		clear: both;
-		display: block;
-		height: 0;
-		overflow: hidden;
+		clear    : both;
+		height   : 0;
+		content  : '.';
+		display  : block;
+		overflow : hidden;
 	}
 	.list-item .inner{
-		margin: 0 10rpx;
-		border-radius: 10rpx;
-		background-color: #fff;
+		margin           : 0 10rpx;
+		border-radius    : 10rpx;
+		background-color : #fff;
 	}
 	.img-style{
 		background-color: #d6d3d4;

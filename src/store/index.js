@@ -10,13 +10,15 @@ import Vue          from 'vue'
 import Vuex         from 'vuex'
 import * as actions from './actions'
 import  Counter     from './module/counter'
+import  User     from './module/user'
 
 Vue.use(Vuex)
 
 const store = new Vuex.Store({
 	actions,
 	modules : {
-		Counter
+		Counter,
+		User
 	},
 	// strict  : debug
 })
