@@ -18,49 +18,24 @@
 			:indicatorColor="indicatorColor"
 			:indicator-active-color="indicatorActiveColor"
 			>
-				<block v-for="(item, index) in imgUrls" :key="index">
+				<block v-for="(item, index) in banner" :key="index">
 
-					<swiper-item>
-				      	<image :src="imgUrls" class="slide-image" alt="imgs"></image>
+					<swiper-item class="swiper-item">
+						<div :style="'background-image: url('+item.pic+');'" class="slide-image"></div>
 				    </swiper-item>
 				</block>
 			</swiper>
 		</div>
 		<div class="list-box">
-			<div class="list-item">
+			<div v-for="(item, index) in list" :key="index" class="list-item" @click="onPlay(item)">
 				<div class="inner">
-					<div class="img-style"></div>
+					<div class="img-style" :style="'background-image: url('+item.gift_pic+');'"></div>
 					<div class="item-content">
-						<h3>{{name}}</h3>
+						<h3>{{item.gift_name}}</h3>
 						<div class="item-bottom">
-							<div class="price bottom-style">{{price}}币/次</div>
-							<div class="status bottom-style" v-if="free? true : false"><div class="radius"></div>空闲中</div>
-							<div class="status-nofree" v-if="free? false : true"><div class="radius-nofree"></div>召唤中</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="list-item">
-				<div class="inner">
-					<div class="img-style"></div>
-					<div class="item-content">
-						<h3>{{name}}</h3>
-						<div class="item-bottom">
-							<div class="price">{{price}}币/次</div>
-							<div class="status bottom-style" v-if="free? true : false"><div class="radius"></div>空闲中</div>
-							<div class="status-nofree" v-if="free? false : true"><div class="radius-nofree"></div>召唤中</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="list-item">
-				<div class="inner">
-					<div class="img-style"></div>
-					<div class="item-content">
-						<h3>{{name}}</h3>
-						<div class="item-bottom">
-							<div class="price">{{price}}币/次</div>
-							<div class="status"><div class="radius"></div>空闲中</div>
+							<div class="price bottom-style">{{item.gold_price}}币/次</div>
+							<!-- <div class="status bottom-style" v-if="free? true : false"><div class="radius"></div>空闲中</div>
+							<div class="status-nofree" v-if="free? false : true"><div class="radius-nofree"></div>召唤中</div> -->
 						</div>
 					</div>
 				</div>
@@ -70,83 +45,83 @@
 </template>
 
 <script>
+	import Vue   from 'vue';
 
 	export default{
 		data() {
 			return {
-				name: '商品名称',
-				price: 18,
-				free: false,
-				indicatorDots: true,
-				indicatorColor: 'rgba(255,255,255,.4)',
-				indicatorActiveColor: '#fff',
-				autoplay: true,
-				interval: 5000,
-				duration: 1000,
-				imgUrls: [
-					'http://img02.tooopen.com/images/20150928/tooopen_sy_143912755726.jpg',
-					'http://img06.tooopen.com/images/20160818/tooopen_sy_175866434296.jpg',
-					'http://img06.tooopen.com/images/20160818/tooopen_sy_175833047715.jpg'
-			    ]
+				free                 : false,
+				indicatorDots        : true,
+				indicatorColor       : 'rgba(255,255,255,.4)',
+				indicatorActiveColor : '#fff',
+				autoplay             : true,
+				interval             : 5000,
+				duration             : 1000,
+				list                 : []
 			}
 		},
+		computed: {
+			banner(){
+				return Vue.store.getters.getBanner
+			},
+			category() {
+				return Vue.store.state.Hall.category
+			}
+	    },
 		methods: {
-			getUserInfo () {
-		      	// 调用登录接口
-		      	wx.login({
-		        	success: (res) => {
-		        		if(res.code) {
-		        			wx.request({
-		        				url : '',
-		        				data: {
-		        					code: res.code
-		        				},
-		        				method: 'POST',
-		        				header: {'content-type': 'application/json'},
-		        				success: function(data){
-		        					console.log(data)
-		        				}
-		        			})
-		        			wx.getUserInfo({
-			            		success: (res) => {
-			              			this.userInfo = res.userInfo
-			            		},
-			          		})
-		        		}else {
-		        			console.log('获取用户登录态失败！' + res.errMsg)
-		        		}
-		        	}
-		      	})
+		    onPlay(obj) {
+		    	const url = `/pages/rotary/main?gift_name=${obj.gift_name}&gsid=${obj.gsid}&gift_pic=${obj.gift_pic}&gold_price=${obj.gold_price}`;
+		    	wx.navigateTo({
+					url
+				})
 		    },
+		    _onSort(list) {
+		    	this.list = list.map(val => {
+		    		let category = this.category.find(v => v.key === val.gift_category)
+		    		if(!category) category = this.category.find(v => v.key === 0)
+		    		return Object.assign(val, {...category});
+		    	}).sort((a,b) => a.order - b.order);
+		    },
+		    onRefresh() {
+		    	wx.request({
+					url     : `${Vue.setting.api}mobile/wawa_list`,
+					success : (result) => this._onSort(result.data.data),
+					fail    : (err) => {
+						wx.showToast({
+							title    : '网络错误',
+							icon     : 'none',
+							duration : 2000
+						})
+					}
+                })
+		    }
 		},
-		created () {
-		    // 调用应用实例的方法获取全局数据
-		    this.getUserInfo()
+		beforeMount() {
+			this.onRefresh();
 		}
 	}
 </script>
 
 <style>
 	Page {
-	  background: #f3f0e3;
-	  width: 100%;
-	  height: 100%;
-	  overflow-x: hidden;
-	  overflow-y: auto;
+		background : #f3f0e3;
+		width      : 100%;
+		height     : 100%;
+		overflow-x : hidden;
+		overflow-y : auto;
 	}
 	swiper{
-		height: 360rpx;
 	}
 	.swiper{
-		margin: 20rpx;
-		background-color: #f4f4f4;
-		border-radius: 20rpx;	
+		margin : 20rpx;
 	}
+
 	.swiper .slide-image{
-		width: 100%;
-		height: 360rpx;
-		background-size: cover;
-		overflow: hidden;
+		width           : 100%;
+		height          : 360rpx;
+		background-size : cover;
+		border-radius   : 20rpx;
+		overflow        : hidden;
 	}
 	.list-box{
 		padding: 0 10rpx;
@@ -174,6 +149,7 @@
 		background-color: #d6d3d4;
 		height: 260rpx;
 		border-radius: 10rpx;
+		background-size: cover;
 	}
 	.item-content{
 		padding: 10rpx 14rpx;

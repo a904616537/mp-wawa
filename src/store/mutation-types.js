@@ -6,8 +6,17 @@
 * @Flow 
 */
 
-export const  DEVRENENT = 'counter/decrement'
-export const  INCREMENT = 'counter/increment'
+export const DEVRENENT = 'counter/decrement'
+export const INCREMENT = 'counter/increment'
 
-export const  LOGIN         = 'user/login'
-export const  SETSESSIONKEY = 'user/session_key'
+export const HALL_CATEGORY = 'hall/category'
+
+export const LOGIN         = 'user/login'
+export const SETSESSIONKEY = 'user/session_key'
+export const USERDETAIL    = 'user/detail'
+export const USER_PLAY     = 'user/play'
+export const SETSHARE      = 'user/share'
+
+
+
+export const SET_BANNER = 'banner/set'

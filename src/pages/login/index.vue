@@ -38,14 +38,21 @@
 	export default{
 		data () {
 			return {
-				img1 : '../../static/images/ad1.png',
-				img2 : '../../static/images/image-2.png'
+				img1 : 'http://chuantu.biz/t6/331/1529633391x-1404817874.png',
+				img2 : 'http://chuantu.biz/t6/331/1529633507x-1404817874.png'
 			}
 		},
 		computed: {
 	        user () {
 	        	return store.state.User.user
+	        },
+	        shareData() {
+	        	return store.state.User.share
 	        }
+	    },
+	    onLoad(option){
+	        this.props = {...option}
+	        console.log('this.props', option)
 	    },
 		methods: {
 			onSetSessionKey (key) {
@@ -61,7 +68,6 @@
 					const {encryptedData, iv} = e.mp.detail;
 	                this.onGetLogin(encryptedData, iv)
 	                .then(userdata => {
-	                	console.log('onGotUserInfo', userdata);
 	                	wx.redirectTo({
 							url : '/pages/index/main'
 						})
@@ -79,18 +85,20 @@
 				}
 			},
 	        onWXApp(user) {
-	        	console.log('user -----', user)
 	        	return new Promise((resolve, reject) => {
 	        		const data = {
-	        			openid : user.openId,
-						avatar : user.avatarUrl,
-						gender : user.gender
+						openid  : user.openId,
+						unionid : user.unionId,
+						avatar  : user.avatarUrl,
+						gender  : user.gender
 	        		}
 		        	wx.request({
-	                    url  : `${Vue.setting.api}mobile/wx_app`,
-	                    data : data,
-	                    success : (result, req) => {
-	                    	console.log('result', result);
+						url     : `${Vue.setting.api}mobile/wx_app`,
+						data    : data,
+						success : (result, req) => {
+	                    	store.commit('banner/set', result.data.contentconfig.find(val => val.id == 10));
+	                    	store.commit('hall/category', result.data.category);
+	                    	store.commit('user/detail', result.data.user);
 	                    	resolve();
 	                    }
 	                })
@@ -125,10 +133,15 @@
 	                                url  : `${Vue.setting.api}mobile/wx_code`,
 	                                data : { code : res.code },
 	                                success : (result) => {
-	                                	console.log('result =======', result)
 	                                	// 登陆服务器响应成功
 	                                	const {session_key, openid} = result.data;
 	                                	const pc = new WxCrypt(Vue.setting.appid, session_key)
+
+	                                	if(this.shareData) {
+	                                		const shareV = pc.decryptData(this.shareData.encryptedData, this.shareData.iv)
+	                                		console.log('shareV', shareV, this.shareData)
+	                                	}
+	                                	
 							            const data = pc.decryptData(encryptedData , iv)
 							            if(data) {
 							            	this.onSetSessionKey(session_key);

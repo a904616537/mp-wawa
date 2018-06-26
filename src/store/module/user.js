@@ -11,6 +11,8 @@ import * as types  from '../mutation-types'
 const state = {
 	user        : {},
 	session_key : '',
+	detail      : {},
+	share       : null
 }
 
 const actions = {
@@ -29,7 +31,16 @@ const mutations = {
 	},
 	[types.SETSESSIONKEY] (state, data) {
 		state.session_key = data;
-	}
+	},
+	[types.USERDETAIL] (state, data) {
+		state.detail = data;
+	},
+	[types.USER_PLAY] (state, data) {
+		state.detail.room_card -= data;
+	},
+	[types.SETSHARE] (state, data) {
+		state.share = data;
+	},
 }
 
 export default {

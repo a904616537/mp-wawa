@@ -1,51 +1,93 @@
 <template>
-<div class="container" style="background-image: url('../../static/images/bg.png');">
+<div class="container" style="background-image: url('http://chuantu.biz/t6/331/1529633569x-1404817874.png');">
 
 	<div class="title">
 		<img :src="title_src" style="width: 100%; height: 100%;" />
 	</div>
 	<div class="animation">
-		<div class="pan" style="background-image: url('../../static/images/pan1.png');">
-			<div class="panbg" :animation="aniData" style="background-image: url('../../static/images/pan2.png');">
+		<div class="pan" style="background-image: url('http://chuantu.biz/t6/331/1529634090x-1404817874.png');">
+			<div class="panbg" :animation="aniData" style="background-image: url('http://chuantu.biz/t6/331/1529634073x-1404817874.png');">
 				<div v-for="(item, index) in lottery" :key="index"  :class="('plate-box' + index)" >
 					<p class="text-box">{{ item }}</p>
 		        </div>
 			</div>
 		</div>
-		<div @click="startRollTap" class="start" style="background-image: url('../../static/images/lucky_btn.png');"></div>
+		<div @click="() => startRollTap()" class="start" style="background-image: url('http://chuantu.biz/t6/331/1529634055x-1404817874.png');"></div>
 		<img :src="src" class="pointer">
 	</div>
 	<div class="footer">
 		<div class="input">
-			<p>本次：99币</p>
-			<p>余额：99币</p>
+			<p>本次：{{props.gold_price}}币</p>
+			<p>余额：{{detail.room_card}}币</p>
 		</div>
-		<div class="btn">
+		<div class="btn" @click="show = true">
 			<p>免费获得娃娃币</p>
 		</div>
-		<div class="btn">
+		<div class="btn" @click="() => goBack()">
 			<p>换一台</p>
 		</div>
 	</div>
 	<div class="modal" v-if="showbag">
-		<div class="bag" style="background-image: url('../../static/images/bag_bg.png');">
+		<div class="bag" style="background-image: url('http://chuantu.biz/t6/331/1529634025x-1404817874.png');">
 			<input type="text" name="bag" :value="bag_text" disabled />
 			<img :src="btn_src" class="bag_btn" @click="showbag=false" />
 		</div>
 	</div>
+	<v-share :show="show" :onClose="() => show = !show"/>
 	
 </div>
 </template>
 
 <script>
-
+import Vue   from 'vue';
+import share from'./share';
 
 export default {
+	onLoad(e) {
+		wx.showShareMenu({
+			withShareTicket: true
+		})
+	},
+	onShow(e) {
+		wx.showShareMenu({
+			withShareTicket: true
+		})
+	},
+	onShareAppMessage(res) {
+        if (res.from === 'button') {
+            // 来自页面内转发按钮
+            console.log(res.target)
+        }
+        console.log('userinfo', this.detail)
+        return {
+			title : '小程序分享测试',
+			path  : `/pages/login/main?uid=${this.detail.uid}`,
+			success : (res) => {
+				console.log('res.shareTickets[0]', res)
+				if(res.shareTickets && res.shareTickets.length > 0) {
+					wx.getShareInfo({
+						shareTicket : res.shareTickets[0],
+						success     : (res) => { console.log(res) },
+						fail        : (res) => { console.log(res) },
+						complete    : (res) => { console.log(res) }
+					})
+				}
+			},
+			fail(e) {
+				// shareAppMessage:fail cancel
+				// shareAppMessage:fail(detail message) 
+			},
+			complete() { }
+
+		}
+    },
 	data () {
 		return {
-			btn_src       : '../../static/images/bag_btn.png',
-			title_src     : '../../static/images/title.png',
-			src           : '../../static/images/pointer.png',
+			show          : false,
+			props         : {},
+			btn_src       : 'http://chuantu.biz/t6/331/1529633822x-1404817874.png',
+			title_src     : 'http://chuantu.biz/t6/331/1529633981x-1404817874.png',
+			src           : 'http://chuantu.biz/t6/331/1529634009x-1404817874.png',
 			bag_text      : '',
 			showbag       : false,
 			aniData       : null,
@@ -55,40 +97,63 @@ export default {
 			lottery       : ['奖品1', '奖品2', '奖品3', '奖品4', '奖品5', '奖品6']	//放奖品
 		}
 	},
-
 	components: {
+		'v-share' : share
 	},
-
+	computed: {
+		detail() {
+			console.log('Vue.store.state.User.detail', Vue.store.state.User.detail)
+			return Vue.store.state.User.detail
+		}
+    },
+	onLoad(option){
+		this.props = {...option}
+	},
 	methods: {
-		onLoad(opt) {
+		onLoadRotary(opt) {
 			this.aniData = wx.createAnimation({
 				duration       : 3000,
 				timingFunction : 'ease'
 			});
 		},
-		startRollTap() { //开始转盘
-			if (this.canRoll) {
-				this.onLoad();
-				this.canRoll = false;
-				let aniData  = this.aniData; //获取this对象上的动画对象
-				let rightNum = ~~(Math.random() * this.lottery.length); //生成随机数
-				console.log(`随机数是${rightNum}`);
-				console.log(`奖品是：${this.lottery[rightNum]}`);
-				const rotate = 3600 * this.num - 360 / this.lottery.length * rightNum;
-				aniData.rotate(rotate).step();
-				this.aniData = aniData.export()
-				this.num++;
-				this.canRoll = true;
-				// 转盘结束后弹出结果
-				setTimeout(() => {
-					this.bag_text = this.lottery[rightNum]
-					this.showbag = true;
-				}, 3500);
+		onValidation(next) {
+			if(this.props.gold_price < this.detail.room_card) {
+				next();
+			} else {
+				wx.showToast({
+					title    : '哟！你王国币不够啦',
+					icon     : 'none',
+					duration : 2000
+				})
 			}
+		},
+		goBack() {
+			wx.navigateBack();
+		},
+		startRollTap() { //开始转盘
+			this.onValidation(() => {
+				if (this.canRoll) {
+					this.onLoadRotary();
+					this.canRoll = false;
+					let aniData  = this.aniData; //获取this对象上的动画对象
+					let rightNum = ~~(Math.random() * this.lottery.length); //生成随机数
+					console.log(`随机数是${rightNum}`);
+					console.log(`奖品是：${this.lottery[rightNum]}`);
+					const rotate = 3600 * this.num - 360 / this.lottery.length * rightNum;
+					aniData.rotate(rotate).step();
+					this.aniData = aniData.export()
+					this.num++;
+					this.canRoll = true;
+					// 转盘结束后弹出结果
+					setTimeout(() => {
+						this.bag_text = this.lottery[rightNum]
+						this.showbag = true;
+						this.aniData = null;
+						Vue.store.commit('user/play', this.props.gold_price);
+					}, 3500);
+				}
+			})
 		}
-	},
-
-	created () {
 	}
 }
 </script>
@@ -103,8 +168,7 @@ export default {
 	z-index           : 0;
 	position          : absolute;
 	overflow          : hidden;
-	word-break        : break-all; 
-	background-color  : red;
+	word-break        : break-all;
 	background-repeat : no-repeat;
 }
 .title {
@@ -116,7 +180,7 @@ export default {
 	position: relative;
 }
 .pointer {
-	z-index   : 999;
+	z-index   : 9;
 	width     : 5vh;
 	height    : 8vh;
 	left      : 50%;
@@ -126,7 +190,7 @@ export default {
 }
 .start {
 	position          : absolute;
-	z-index           : 999;
+	z-index           : 9;
 	left              : 50%;
 	top               : 50%;
 	transform         : translate(-50%, -50%);
@@ -143,17 +207,17 @@ export default {
 	display           : table-cell;
 	vertical-align    : middle;
 	text-align        : center;
-	width             : 55vh;
-	height            : 55vh;
+	width             : 90vw;
+	height            : 90vw;
 	background-repeat : no-repeat;
-	background-size   : 55vh 55vh;
+	background-size   : 90vw 90vw;
 }
 .panbg {
 	margin: 0 auto;
-	width: 50vh;
-	height: 50vh;
+	width: 85vw;
+	height: 85vw;
 	background-repeat: no-repeat;
-	background-size: 50vh 50vh;
+	background-size: 85vw 85vw;
 }
 .text-box {
 	font-weight: bold;

@@ -9,10 +9,12 @@
 
 import Vue from 'vue'
 import App from './App'
+import store from './store'
 
 App.mpType               = 'app';
 Vue.config.productionTip = false;
-Vue.setting = {
+Vue.store                = store;
+Vue.setting              = {
     api       : 'https://waguo.vip/',
     appid     : 'wx45f7a61a75ccf686',
     socketUrl : 'ws://106.14.112.101:80'

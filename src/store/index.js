@@ -9,16 +9,22 @@
 import Vue          from 'vue'
 import Vuex         from 'vuex'
 import * as actions from './actions'
+import * as getters from './getters'
 import  Counter     from './module/counter'
-import  User     from './module/user'
+import  User        from './module/user'
+import  Banner      from './module/banner'
+import  Hall        from './module/hall'
 
 Vue.use(Vuex)
 
 const store = new Vuex.Store({
 	actions,
+	getters,
 	modules : {
 		Counter,
-		User
+		Banner,
+		User,
+		Hall
 	},
 	// strict  : debug
 })
