@@ -9,7 +9,10 @@
 import * as types  from '../mutation-types'
 
 const state = {
-	banner : {}
+	banner : [{
+		name : "六一",
+		pic  : "http://c.waguo.net//static/images/shangchengtu.png"
+	}]
 }
 
 const actions = {
@@ -21,7 +24,8 @@ const actions = {
 // mutations
 const mutations = {
 	[types.SET_BANNER] (state, data) {
-		state.banner = data;
+
+		state.banner = JSON.parse(data.content);
 	}
 }
 

@@ -12,7 +12,8 @@ const state = {
 	user        : {},
 	session_key : '',
 	detail      : {},
-	share       : null
+	share       : null,
+	token       : null
 }
 
 const actions = {
@@ -33,7 +34,8 @@ const mutations = {
 		state.session_key = data;
 	},
 	[types.USERDETAIL] (state, data) {
-		state.detail = data;
+		state.detail = data.user;
+		state.token  = data.token;
 	},
 	[types.USER_PLAY] (state, data) {
 		state.detail.room_card -= data;

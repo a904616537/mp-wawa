@@ -27,7 +27,7 @@
 			</swiper>
 		</div>
 		<div class="list-box">
-			<div v-for="(item, index) in list" :key="index" class="list-item" @click="onPlay(item)">
+			<div v-for="(item, index) in sortList" :key="index" class="list-item" @click="onPlay(item)">
 				<div class="inner">
 					<div class="img-style" :style="'background-image: url('+item.gift_pic+');'"></div>
 					<div class="item-content">
@@ -41,15 +41,22 @@
 				</div>
 			</div>
 		</div>
+		<v-login :show="show" :onClose="onClose"/>
 	</div>
 </template>
 
 <script>
-	import Vue   from 'vue';
+	import Vue     from 'vue';
+	import Login   from './login';
+	import WxCrypt from '../../utils/WXBizDataCrypt';
+	import login_help from '../../utils/login_help';
+	import store   from '../../store';
+
 
 	export default{
 		data() {
 			return {
+				show                 : false,
 				free                 : false,
 				indicatorDots        : true,
 				indicatorColor       : 'rgba(255,255,255,.4)',
@@ -60,32 +67,47 @@
 				list                 : []
 			}
 		},
+		onLoad(option){
+	        this.props = {...option}
+	    },
+	    components: {
+			'v-login' : Login
+		},
 		computed: {
 			banner(){
-				return Vue.store.getters.getBanner
+				return store.getters.getBanner
 			},
-			category() {
-				return Vue.store.state.Hall.category
-			}
+			isLogin() {
+				return store.getters.isLogin
+			},
+			sortList() {
+				return this.list.map(val => {
+		    		let category = store.state.Hall.category.find(v => v.key === val.gift_category)
+		    		if(!category) category = store.state.Hall.category.find(v => v.key === 0)
+		    		return Object.assign(val, {...category});
+		    	}).sort((a,b) => a.order - b.order);
+			},
+			user () {
+	        	return store.state.User.user
+	        },
+	        shareData() {
+	        	return store.state.User.share
+	        }
 	    },
 		methods: {
+			onClose() {
+				this.show = false;
+			},
 		    onPlay(obj) {
-		    	const url = `/pages/rotary/main?gift_name=${obj.gift_name}&gsid=${obj.gsid}&gift_pic=${obj.gift_pic}&gold_price=${obj.gold_price}`;
+		    	const url = `/pages/rotary/main?gift_no=${obj.gift_no}&gift_name=${obj.gift_name}&gsid=${obj.gsid}&gift_pic=${obj.gift_pic}&gold_price=${obj.gold_price}`;
 		    	wx.navigateTo({
 					url
 				})
 		    },
-		    _onSort(list) {
-		    	this.list = list.map(val => {
-		    		let category = this.category.find(v => v.key === val.gift_category)
-		    		if(!category) category = this.category.find(v => v.key === 0)
-		    		return Object.assign(val, {...category});
-		    	}).sort((a,b) => a.order - b.order);
-		    },
 		    onRefresh() {
 		    	wx.request({
 					url     : `${Vue.setting.api}mobile/wawa_list`,
-					success : (result) => this._onSort(result.data.data),
+					success : (result) => this.list = result.data.data,
 					fail    : (err) => {
 						wx.showToast({
 							title    : '网络错误',
@@ -98,6 +120,26 @@
 		},
 		beforeMount() {
 			this.onRefresh();
+
+			wx.showLoading({
+				title : '加载中'
+			})
+			login_help.onGetUserInfo()
+            .then(res => {
+            	if(!this.isLogin) {
+					this.show = true;
+				}
+				setTimeout(() => {
+					this.onClose();
+					wx.hideLoading();
+				}, 1000);
+            })
+	        .catch(err => {
+	        	if(!this.isLogin) {
+					this.show = true;
+				}
+	        	wx.hideLoading();
+	        })
 		}
 	}
 </script>

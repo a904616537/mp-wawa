@@ -8,7 +8,7 @@
 		<div class="pan" style="background-image: url('http://chuantu.biz/t6/331/1529634090x-1404817874.png');">
 			<div class="panbg" :animation="aniData" style="background-image: url('http://chuantu.biz/t6/331/1529634073x-1404817874.png');">
 				<div v-for="(item, index) in lottery" :key="index"  :class="('plate-box' + index)" >
-					<p class="text-box">{{ item }}</p>
+					<p class="text-box">{{ item.name }}</p>
 		        </div>
 			</div>
 		</div>
@@ -27,14 +27,21 @@
 			<p>换一台</p>
 		</div>
 	</div>
-	<div class="modal" v-if="showbag">
-		<div class="bag" style="background-image: url('http://chuantu.biz/t6/331/1529634025x-1404817874.png');">
-			<input type="text" name="bag" :value="bag_text" disabled />
+
+	<div class="modal" v-if="showbag && bag.fruit">
+		<div class="bag" style="background-image: url('../../static/images/success.jpg');">
+			<img class="bag_img" :src="bag.img_url" />
 			<img :src="btn_src" class="bag_btn" @click="showbag=false" />
 		</div>
 	</div>
+
+	<div class="modal" v-if="showbag && !bag.fruit">
+		<div class="bag" style="background-image: url('../../static/images/fail.jpg');">
+			<img :src="btn_src" class="bag_btn" @click="showbag=false" />
+		</div>
+	</div>
+
 	<v-share :show="show" :onClose="() => show = !show"/>
-	
 </div>
 </template>
 
@@ -58,12 +65,10 @@ export default {
             // 来自页面内转发按钮
             console.log(res.target)
         }
-        console.log('userinfo', this.detail)
         return {
 			title : '小程序分享测试',
 			path  : `/pages/login/main?uid=${this.detail.uid}`,
 			success : (res) => {
-				console.log('res.shareTickets[0]', res)
 				if(res.shareTickets && res.shareTickets.length > 0) {
 					wx.getShareInfo({
 						shareTicket : res.shareTickets[0],
@@ -88,13 +93,16 @@ export default {
 			btn_src       : 'http://chuantu.biz/t6/331/1529633822x-1404817874.png',
 			title_src     : 'http://chuantu.biz/t6/331/1529633981x-1404817874.png',
 			src           : 'http://chuantu.biz/t6/331/1529634009x-1404817874.png',
-			bag_text      : '',
+			bag      : {
+				name  : '',
+				fruit : false
+			},
 			showbag       : false,
 			aniData       : null,
 			canRoll       : true, 				//加控制，防止用户点击两次
 			num           : 1,					//用在动画上，让用户在第二次点击的时候可以接着上次转动的角度继续转
 			lotteryArrLen : 0,					//放奖品的数组的长度
-			lottery       : ['奖品1', '奖品2', '奖品3', '奖品4', '奖品5', '奖品6']	//放奖品
+			lottery       : []	//放奖品
 		}
 	},
 	components: {
@@ -102,12 +110,30 @@ export default {
 	},
 	computed: {
 		detail() {
-			console.log('Vue.store.state.User.detail', Vue.store.state.User.detail)
 			return Vue.store.state.User.detail
+		},
+		token() {
+			return Vue.store.state.User.token
 		}
     },
 	onLoad(option){
-		this.props = {...option}
+		this.props = {...option};
+
+		wx.request({
+			url     : `${Vue.setting.api}mobile/turnplate`,
+			data    : {gsid : option.gsid},
+			success : (result) => {
+				this.lottery = result.data.data;
+				console.log('this.lottery', this.lottery)
+			},
+			fail    : (err) => {
+				wx.showToast({
+					title    : '网络错误',
+					icon     : 'none',
+					duration : 2000
+				})
+			}
+	    })
 	},
 	methods: {
 		onLoadRotary(opt) {
@@ -117,40 +143,53 @@ export default {
 			});
 		},
 		onValidation(next) {
-			if(this.props.gold_price < this.detail.room_card) {
-				next();
-			} else {
-				wx.showToast({
-					title    : '哟！你王国币不够啦',
-					icon     : 'none',
-					duration : 2000
-				})
-			}
+			if(this.props.gold_price < this.detail.room_card) next();
+			else this.show = true;
 		},
 		goBack() {
 			wx.navigateBack();
 		},
 		startRollTap() { //开始转盘
 			this.onValidation(() => {
+				
 				if (this.canRoll) {
 					this.onLoadRotary();
 					this.canRoll = false;
 					let aniData  = this.aniData; //获取this对象上的动画对象
-					let rightNum = ~~(Math.random() * this.lottery.length); //生成随机数
-					console.log(`随机数是${rightNum}`);
-					console.log(`奖品是：${this.lottery[rightNum]}`);
-					const rotate = 3600 * this.num - 360 / this.lottery.length * rightNum;
-					aniData.rotate(rotate).step();
-					this.aniData = aniData.export()
-					this.num++;
-					this.canRoll = true;
-					// 转盘结束后弹出结果
-					setTimeout(() => {
-						this.bag_text = this.lottery[rightNum]
-						this.showbag = true;
-						this.aniData = null;
-						Vue.store.commit('user/play', this.props.gold_price);
-					}, 3500);
+					console.log({gift_no : this.props.gift_no, gsid : this.props.gsid, token : this.token})
+					wx.request({
+						url     : `${Vue.setting.api}mobile/wawa_gift`,
+						data    : {gift_no : this.props.gift_no, gsid : this.props.gsid, token : this.token},
+						success : (result) => {
+
+							let rightNum = result.data.num;
+							const rotate = 3600 * this.num - 360 / this.lottery.length * rightNum;
+							aniData.rotate(rotate).step();
+							this.aniData = aniData.export()
+							this.num++;
+							const lottery = this.lottery[rightNum];
+							this.bag = {
+								img_url : lottery.img_url,
+								name    : lottery.name,
+								fruit   : lottery.type === 0 ? false : true
+							}
+							console.log('fruit', this.bag)
+							// 转盘结束后弹出结果
+							setTimeout(() => {
+								this.showbag = true;
+								this.aniData = null;
+								this.canRoll = true;
+								Vue.store.commit('user/play', this.props.gold_price);
+							}, 3500);
+						},
+						fail    : (err) => {
+							wx.showToast({
+								title    : '网络错误',
+								icon     : 'none',
+								duration : 2000
+							})
+						}
+				    })
 				}
 			})
 		}
@@ -220,7 +259,8 @@ export default {
 	background-size: 85vw 85vw;
 }
 .text-box {
-	font-weight: bold;
+	font-weight : bold;
+	width       : 150rpx;
 }
 .footer {
 	width           :  100%;
@@ -268,6 +308,7 @@ export default {
 .bag {
 	width             : 70vw;
 	height            : 100vw;
+	border-radius     : 70rpx;
 	display           : flex;
 	align-items       : center;
 	justify-content   : flex-end;
@@ -285,10 +326,19 @@ export default {
 	margin-bottom    : 12vw;
 	background-color : #fff;
 }
-.bag img {
+.bag .bag_btn{
 	width         : 40vw;
 	height        : 10vw;
-	margin-bottom : 25vw;
+	margin-bottom : 5vh;
+}
+.bag .bag_img {
+	width         : 240rpx;
+	height        : 240rpx;
+	border-radius : 130rpx;
+	border-width  : 10rpx;
+	border-color  : #fff;
+	border-style  : solid;
+	margin-bottom : 15vh;
 }
 .plate-box0 {
 	position         : absolute;

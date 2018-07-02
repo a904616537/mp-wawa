@@ -7,5 +7,11 @@
 */
 
 export const getBanner = (state, getters) => {
-	return JSON.parse(state.Banner.banner.content)
+	if(state.Banner.banner) return state.Banner.banner;
+	else return []
+}
+
+export const isLogin = (state, getters) => {
+	if(state.User.token) return true;
+	else return false;
 }
