@@ -1,6 +1,5 @@
 <script>
 import Vue from 'vue';
-
 export default {
     data() {
         return {
@@ -8,10 +7,12 @@ export default {
         }
     },
     onLaunch(ops) {
+        console.log('opsops.scene', ops)
         if (ops.scene == 1044) {
             wx.getShareInfo({
                 shareTicket : ops.shareTicket,
                 success     : (res) => { 
+                    console.log('getShareInfo', res)
                     Vue.store.commit('user/share', res)
                 },
                 fail        : (res) => { console.log('error', res) },
@@ -22,17 +23,17 @@ export default {
     methods: {
     },
     onShow(e) {
-        // wx.getBackgroundAudioPlayerState({
-        //     success(res) {
-        //         if(res.status === 2) {
-        //             wx.playBackgroundAudio({
-        //                 dataUrl     : 'http://c.waguo.net/client/music/01.mp3',
-        //                 title       : '娃娃王国',
-        //                 coverImgUrl : 'http://chuantu.biz/t6/331/1529633507x-1404817874.png'
-        //             })
-        //         }
-        //     }
-        // })
+        wx.getBackgroundAudioPlayerState({
+            success(res) {
+                if(res.status === 2) {
+                    wx.playBackgroundAudio({
+                        dataUrl     : 'http://c.waguo.net/client/music/01.mp3',
+                        title       : '娃娃王国',
+                        coverImgUrl : 'http://chuantu.biz/t6/331/1529633507x-1404817874.png'
+                    })
+                }
+            }
+        })
     },
     onHide() {
         wx.getBackgroundAudioPlayerState({
@@ -45,15 +46,15 @@ export default {
         console.log('created app');
         
 
-        // wx.getBackgroundAudioPlayerState({
-        //     fail(res) {
-        //         wx.playBackgroundAudio({
-        //             dataUrl     : 'http://c.waguo.net/client/music/01.mp3',
-        //             title       : '娃娃王国',
-        //             coverImgUrl : 'http://chuantu.biz/t6/331/1529633507x-1404817874.png'
-        //         })
-        //     }
-        // })
+        wx.getBackgroundAudioPlayerState({
+            fail(res) {
+                wx.playBackgroundAudio({
+                    dataUrl     : 'http://c.waguo.net/client/music/01.mp3',
+                    title       : '娃娃王国',
+                    coverImgUrl : 'http://chuantu.biz/t6/331/1529633507x-1404817874.png'
+                })
+            }
+        })
 
 
         // wx.connectSocket({

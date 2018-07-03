@@ -13,6 +13,7 @@ const state = {
 	session_key : '',
 	detail      : {},
 	share       : null,
+	share_uid   : null,
 	token       : null
 }
 
@@ -34,6 +35,7 @@ const mutations = {
 		state.session_key = data;
 	},
 	[types.USERDETAIL] (state, data) {
+		console.log('data.user', data.user)
 		state.detail = data.user;
 		state.token  = data.token;
 	},
@@ -43,6 +45,10 @@ const mutations = {
 	[types.SETSHARE] (state, data) {
 		state.share = data;
 	},
+	[types.USER_UID] (state, data) {
+		state.share_uid = data;
+	},
+	
 }
 
 export default {

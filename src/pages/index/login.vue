@@ -10,7 +10,7 @@
 <div class="main" v-if="show">
 	<div class="loginview">
 		<div class="icon">
-			<image class="icon_img" src="../../static/images/icon.png"/>
+			<image class="icon_img" src="https://c.waguo.net/static/wxapps/images/icon.png"/>
 		</div>
 		<div class="desc">
 			<p>需要授权才可以继续哦！</p>
@@ -101,7 +101,8 @@ button::after {
 	display          : flex;
 	align-items      : center;
 	justify-content  : center;
-	position         : absolute;
+	position         : fixed;
+	background-color : rgba(0,0,0,0.4);
 }
 .loginview {
 	width            : 60vw;

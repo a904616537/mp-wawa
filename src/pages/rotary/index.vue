@@ -1,18 +1,18 @@
 <template>
-<div class="container" style="background-image: url('http://chuantu.biz/t6/331/1529633569x-1404817874.png');">
+<div class="container" style="background-image: url('https://c.waguo.net/static/wxapps/images/1529633569x-1404817874.png');">
 
 	<div class="title">
 		<img :src="title_src" style="width: 100%; height: 100%;" />
 	</div>
 	<div class="animation">
-		<div class="pan" style="background-image: url('http://chuantu.biz/t6/331/1529634090x-1404817874.png');">
-			<div class="panbg" :animation="aniData" style="background-image: url('http://chuantu.biz/t6/331/1529634073x-1404817874.png');">
+		<div class="pan" style="background-image: url('https://c.waguo.net/static/wxapps/images/1529634090x-1404817874.png');">
+			<div class="panbg" :animation="aniData" style="background-image: url('https://c.waguo.net/static/wxapps/images/1529634073x-1404817874.png');">
 				<div v-for="(item, index) in lottery" :key="index"  :class="('plate-box' + index)" >
 					<p class="text-box">{{ item.name }}</p>
 		        </div>
 			</div>
 		</div>
-		<div @click="() => startRollTap()" class="start" style="background-image: url('http://chuantu.biz/t6/331/1529634055x-1404817874.png');"></div>
+		<div @click="() => startRollTap()" class="start" style="background-image: url('https://c.waguo.net/static/wxapps/images/1529634055x-1404817874.png');"></div>
 		<img :src="src" class="pointer">
 	</div>
 	<div class="footer">
@@ -29,19 +29,19 @@
 	</div>
 
 	<div class="modal" v-if="showbag && bag.fruit">
-		<div class="bag" style="background-image: url('../../static/images/success.jpg');">
+		<div class="bag" style="background-image: url('https://c.waguo.net/static/wxapps/images/success.jpg');">
 			<img class="bag_img" :src="bag.img_url" />
 			<img :src="btn_src" class="bag_btn" @click="showbag=false" />
 		</div>
 	</div>
 
 	<div class="modal" v-if="showbag && !bag.fruit">
-		<div class="bag" style="background-image: url('../../static/images/fail.jpg');">
+		<div class="bag" style="background-image: url('https://c.waguo.net/static/wxapps/images/fail.jpg');">
 			<img :src="btn_src" class="bag_btn" @click="showbag=false" />
 		</div>
 	</div>
 
-	<v-share :show="show" :onClose="() => show = !show"/>
+	<v-share :show="show" :onClose="() => show = !show" :sum="sum"/>
 </div>
 </template>
 
@@ -50,50 +50,56 @@ import Vue   from 'vue';
 import share from'./share';
 
 export default {
-	onLoad(e) {
-		wx.showShareMenu({
-			withShareTicket: true
-		})
-	},
-	onShow(e) {
-		wx.showShareMenu({
-			withShareTicket: true
-		})
-	},
 	onShareAppMessage(res) {
         if (res.from === 'button') {
             // 来自页面内转发按钮
-            console.log(res.target)
+            return {
+				title    : res.target.id,
+				path     : `/pages/index/main?uid=${this.detail.uid}`,
+				imageUrl : this.props.gift_pic
+			}
+        } else {
+        	return {
+				title    : '【免费礼物】小猪佩奇 世界杯小狼等一堆网红娃娃，免费抓，抓中全国包邮，数量有限，速来！',
+				path     : `/pages/index/main?uid=${this.detail.uid}`,
+				imageUrl : this.props.gift_pic
+			}
         }
-        return {
-			title : '小程序分享测试',
-			path  : `/pages/login/main?uid=${this.detail.uid}`,
-			success : (res) => {
-				if(res.shareTickets && res.shareTickets.length > 0) {
-					wx.getShareInfo({
-						shareTicket : res.shareTickets[0],
-						success     : (res) => { console.log(res) },
-						fail        : (res) => { console.log(res) },
-						complete    : (res) => { console.log(res) }
-					})
-				}
-			},
-			fail(e) {
-				// shareAppMessage:fail cancel
-				// shareAppMessage:fail(detail message) 
-			},
-			complete() { }
 
-		}
     },
+	onShow() {
+		this.onFefresh();
+		console.log('show')
+	},
+	onLoad(option){
+		this.props = {...option};
+		wx.showShareMenu({
+			withShareTicket: true
+		})
+		wx.request({
+			url     : `${Vue.setting.api}mobile/turnplate`,
+			data    : {gsid : option.gsid},
+			success : (result) => {
+				this.lottery = result.data.data;
+			},
+			fail    : (err) => {
+				wx.showToast({
+					title    : '网络错误',
+					icon     : 'none',
+					duration : 2000
+				})
+			}
+	    })
+	},
 	data () {
 		return {
-			show          : false,
-			props         : {},
-			btn_src       : 'http://chuantu.biz/t6/331/1529633822x-1404817874.png',
-			title_src     : 'http://chuantu.biz/t6/331/1529633981x-1404817874.png',
-			src           : 'http://chuantu.biz/t6/331/1529634009x-1404817874.png',
-			bag      : {
+			sum       : 0,
+			show      : false,
+			props     : {},
+			btn_src   : 'https://c.waguo.net/static/wxapps/images/1529633822x-1404817874.png',
+			title_src : 'https://c.waguo.net/static/wxapps/images/xyzp.png',
+			src       : 'https://c.waguo.net/static/wxapps/images/dd.png',
+			bag       : {
 				name  : '',
 				fruit : false
 			},
@@ -116,26 +122,20 @@ export default {
 			return Vue.store.state.User.token
 		}
     },
-	onLoad(option){
-		this.props = {...option};
-
-		wx.request({
-			url     : `${Vue.setting.api}mobile/turnplate`,
-			data    : {gsid : option.gsid},
-			success : (result) => {
-				this.lottery = result.data.data;
-				console.log('this.lottery', this.lottery)
-			},
-			fail    : (err) => {
-				wx.showToast({
-					title    : '网络错误',
-					icon     : 'none',
-					duration : 2000
-				})
-			}
-	    })
-	},
 	methods: {
+		onFefresh() {
+			const data = {
+				token : Vue.store.state.User.token
+			}
+			wx.request({
+				url     : `${Vue.setting.api}mobile/share_team_sum`,
+				data,
+				success : (result, req) => {
+	            	console.log('share_team_sum ', result)
+	            	this.sum = result.data.sum;
+	            }
+	        })
+		},
 		onLoadRotary(opt) {
 			this.aniData = wx.createAnimation({
 				duration       : 3000,

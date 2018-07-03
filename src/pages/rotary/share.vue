@@ -16,9 +16,9 @@
 				<p v-if="item.desc != null">{{item.desc}}</p>
 			</div>
 			<div class="btn_view">
-				<button class="btn" open-type="share" @click="item.onPress">
+				<button class="btn" open-type="share" :id="item.share_text" @getshareinfo="getShareInfo" @click="item.onPress">
 					<p>{{item.btn_text}}</p>
-					<p v-if="item.number != null">{{item.current}}/{{item.number}}</p>
+					<p v-if="item.number != null">{{sum}}/{{item.number}}</p>
 				</button>
 			</div>
 		</div>
@@ -34,36 +34,40 @@
 			return {
 				row : [
 					{
-						title     : '邀请好友+30币',
-						desc     : '(对方充值，你得10%返现)',
-						btn_text : '邀请',
-						number   : 5,
-						current  : 0,
-						onPress  : () => {
+						title      : '邀请好友+30币',
+						desc       : '(对方充值，你得10%返现)',
+						btn_text   : '邀请',
+						share_text : '【免费礼物】小猪佩奇 世界杯小狼等一堆网红娃娃，免费抓，抓中全国包邮，数量有限，速来！',
+						number     : 5,
+						current    : 0,
+						onPress    : () => {
 							console.log('分享邀请')
 						}
 					},{
-						title     : null,
-						desc     : '(对方充值，你得10%返现)',
-						btn_text : '分享',
-						number   : 5,
-						current  : 0,
-						onPress  : () => {}
-					},{
-						title     : '每日分享+好运',
-						desc     : null,
-						btn_text : '下载',
-						number   : 5,
-						current  : 0,
-						onPress  : () => {}
-					},{
-						title     : '登陆app签到/开宝箱领币',
-						desc     : null,
-						btn_text : '马上登陆',
-						number   : null,
-						current  : 0,
-						onPress  : () => {}
-					}
+						title      : null,
+						desc       : '转发不同群组 +10币',
+						btn_text   : '转发',
+						share_text : '【0元娃娃】你有一份福利待领取',
+						number     : 5,
+						current    : 0,
+						onPress    : () => {}
+					}, {
+						title      : '每日分享+好运',
+						desc       : null,
+						btn_text   : '分享',
+						share_text : '【转发福利】Hi，送你55币免费抓娃娃，抓中全国包邮送到家，一般人我不告诉他。',
+						number     : 5,
+						current    : 0,
+						onPress    : () => {}
+					},
+					// {
+					// 	title     : '登陆app签到/开宝箱领币',
+					// 	desc     : null,
+					// 	btn_text : '马上登陆',
+					// 	number   : null,
+					// 	current  : 0,
+					// 	onPress  : () => {}
+					// }
 				]
 			}
 		},
@@ -75,19 +79,19 @@
 			show    : {
 				type    : Boolean,
 				default : false
+			},
+			sum : {
+				type    : Number,
+				default : 0
 			}
 		},
 		computed: {
-			banner(){
-				return Vue.store.getters.getBanner
-			},
 	    },
 		methods: {
-		    onPlay(obj) {
-		    }
+			getShareInfo(e) {
+				console.log('getShareInfo error', e)
+			},
 		},
-		beforeMount() {
-		}
 	}
 </script>
 

@@ -16,6 +16,7 @@ export const SETSESSIONKEY = 'user/session_key'
 export const USERDETAIL    = 'user/detail'
 export const USER_PLAY     = 'user/play'
 export const SETSHARE      = 'user/share'
+export const USER_UID      = 'user/uid'
 
 
 

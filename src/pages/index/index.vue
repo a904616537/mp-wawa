@@ -42,21 +42,24 @@
 			</div>
 		</div>
 		<v-login :show="show" :onClose="onClose"/>
+		<v-new-user :show="new_show" :onClose="onCloseNew"/>
 	</div>
 </template>
 
 <script>
-	import Vue     from 'vue';
-	import Login   from './login';
-	import WxCrypt from '../../utils/WXBizDataCrypt';
+	import Vue        from 'vue';
+	import Login      from './login';
+	import NewUser    from './new_user';
+	import WxCrypt    from '../../utils/WXBizDataCrypt';
 	import login_help from '../../utils/login_help';
-	import store   from '../../store';
+	import store      from '../../store';
 
 
 	export default{
 		data() {
 			return {
 				show                 : false,
+				new_show             : false,
 				free                 : false,
 				indicatorDots        : true,
 				indicatorColor       : 'rgba(255,255,255,.4)',
@@ -68,10 +71,11 @@
 			}
 		},
 		onLoad(option){
-	        this.props = {...option}
+	        store.commit('user/uid', option.uid);
 	    },
 	    components: {
-			'v-login' : Login
+			'v-login'    : Login,
+			'v-new-user' : NewUser
 		},
 		computed: {
 			banner(){
@@ -97,6 +101,12 @@
 		methods: {
 			onClose() {
 				this.show = false;
+				if(store.state.User.detail.newuser === 1) {
+					this.new_show = true;
+				}
+			},
+			onCloseNew() {
+				this.new_show = false;
 			},
 		    onPlay(obj) {
 		    	const url = `/pages/rotary/main?gift_no=${obj.gift_no}&gift_name=${obj.gift_name}&gsid=${obj.gsid}&gift_pic=${obj.gift_pic}&gold_price=${obj.gold_price}`;
@@ -189,7 +199,7 @@
 	}
 	.img-style{
 		background-color: #d6d3d4;
-		height: 260rpx;
+		height: 24vh;
 		border-radius: 10rpx;
 		background-size: cover;
 	}
