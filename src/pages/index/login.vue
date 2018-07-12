@@ -76,7 +76,6 @@
 		    			this.onClose();
 		    			wx.hideLoading();
 		    		}
-		    		
 		    	})
 			},
 		}

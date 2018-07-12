@@ -29,15 +29,25 @@
 	</div>
 
 	<div class="modal" v-if="showbag && bag.fruit">
-		<div class="bag" style="background-image: url('https://c.waguo.net/static/wxapps/images/success.jpg');">
+	<!-- <div class="modal" v-if="true"> -->
+		<div class="bag" style="background-image: url('https://c.waguo.net/static/wxapps/images/bg.png');">
 			<img class="bag_img" :src="bag.img_url" />
-			<img :src="btn_src" class="bag_btn" @click="showbag=false" />
+			<div class="bag_share">
+				<img src="https://c.waguo.net/static/wxapps/images/qr-code.png" class="qrcode" />
+				<div class="seach">
+					<p>各大应用商店</p>
+					<img src="https://c.waguo.net/static/wxapps/images/s-btn.png"/>
+					<p>扫码领娃娃</p>
+				</div>
+			</div>
+			<img src="https://c.waguo.net/static/wxapps/images/qr-btn.png" class="bag_btn" @click="onClipboard" />
 		</div>
 	</div>
 
 	<div class="modal" v-if="showbag && !bag.fruit">
+	<!-- <div class="modal" v-if="true"> -->
 		<div class="bag" style="background-image: url('https://c.waguo.net/static/wxapps/images/fail.jpg');">
-			<img :src="btn_src" class="bag_btn" @click="showbag=false" />
+			<img :src="btn_src" class="bag_btn_fruit" @click="showbag=false" />
 		</div>
 	</div>
 
@@ -123,6 +133,16 @@ export default {
 		}
     },
 	methods: {
+		// 截屏
+		onClipboard() {
+			wx.setClipboardData({
+				data : '抓娃娃王国 http://waguo.vip/',
+				success(res) {
+					// this.showbag = false;
+					console.log('setClipboardData', res)
+				}
+			})
+		},
 		onFefresh() {
 			const data = {
 				token : Vue.store.state.User.token
@@ -173,7 +193,6 @@ export default {
 								name    : lottery.name,
 								fruit   : lottery.type === 0 ? false : true
 							}
-							console.log('fruit', this.bag)
 							// 转盘结束后弹出结果
 							setTimeout(() => {
 								this.showbag = true;
@@ -306,12 +325,12 @@ export default {
 	background-color : rgba(0,0,0,0.4);
 }
 .bag {
-	width             : 70vw;
-	height            : 100vw;
+	width             : 600rpx;
+	height            : 740rpx;
 	border-radius     : 70rpx;
 	display           : flex;
 	align-items       : center;
-	justify-content   : flex-end;
+	justify-content   : flex-start;
 	flex-direction    : column;
 	background-size   : 100% 100%;
 	background-repeat : no-repeat;
@@ -327,9 +346,13 @@ export default {
 	background-color : #fff;
 }
 .bag .bag_btn{
-	width         : 40vw;
-	height        : 10vw;
-	margin-bottom : 5vh;
+	width  : 320rpx;
+	height : 60rpx;
+}
+.bag .bag_btn_fruit {
+	width  : 320rpx;
+	height : 80rpx;
+	margin-top : 600rpx;
 }
 .bag .bag_img {
 	width         : 240rpx;
@@ -338,7 +361,34 @@ export default {
 	border-width  : 10rpx;
 	border-color  : #fff;
 	border-style  : solid;
-	margin-bottom : 15vh;
+	margin-top    : 150rpx;
+	margin-bottom : 60rpx;
+}
+.bag .bag_share {
+	display        : flex;
+	flex-direction : row;
+	margin-bottom  : 20rpx;
+}
+.bag .qrcode {
+	width  : 150rpx;
+	height : 150rpx;
+	margin : 0 20rpx;
+}
+.bag .seach {
+	display        : flex;
+	flex-direction : column;
+	align-items    : center;
+}
+
+.bag .seach img {
+	width  : 240rpx;
+	height : 60rpx;
+}
+
+.bag .seach p {
+	flex      : 1;
+	color     : #e05a36;
+	font-size : 30rpx;
 }
 .plate-box0 {
 	position         : absolute;
